@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.contrib import messages
 import requests
 from decouple import config
 # json daha iyi formatta yazdirmak icin
@@ -10,12 +11,26 @@ def index(request):
     url = 'https://api.openweathermap.org/data/2.5/weather?q={}&appid={}&units=metric'
     # pprint(content)
     # print(type(content))
+    u_city=request.GET.get('name')
+    print('user city', u_city)
+    if u_city:
+        response= requests.get(url.format(u_city, config('API_KEY')))
+        if response.status_code == 200:
+            content=response.json()
+            r_city = content['name']
+            if City.objects.filter(name=r_city):
+                messages.warning(request, 'City already exists.')
+            else:
+                City.objects.create(name=r_city)
+                messages.success(request, "City succesfully added")
+        else:
+            messages.warning(request, 'City not found')        
     city_data=[]
     for city in cities:
-        print(city)
+        # print(city)
         response = requests.get(url.format(city, config('API_KEY')))
         content= response.json()
-        pprint(content)
+        # pprint(content)
         data={
             'city': city.name,
             'temp': content['main']['temp'],
@@ -23,7 +38,7 @@ def index(request):
             'icon': content['weather'][0]['icon']
         }
         city_data.append(data)
-        pprint(city_data)
+        # pprint(city_data)
         context={
             'city_data':city_data
         }

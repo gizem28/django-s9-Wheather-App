@@ -7,9 +7,22 @@
     <title>Document</title>
 </head>
 <body>
+    
+    {% if messages %}
+        
+        {% for message in messages  %}
+            {{message}}
+        {% endfor %}
+            
+    {% endif %}
+        
     <center><h1>Weather App</h1></center>
     
-
+    <form action="" method="get">
+        <input type="text" name="name">
+        <input type="submit" value="Add">
+        <hr>
+    </form>
     
     {% for city in city_data %}
         <h4>{{city.city}}</h4>
