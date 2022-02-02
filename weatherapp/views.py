@@ -10,12 +10,22 @@ def index(request):
     url = 'https://api.openweathermap.org/data/2.5/weather?q={}&appid={}&units=metric'
     # pprint(content)
     # print(type(content))
-    
+    city_data=[]
     for city in cities:
         print(city)
         response = requests.get(url.format(city, config('API_KEY')))
         content= response.json()
         pprint(content)
-        
-    return render(request, 'weatherapp/index.html')
+        data={
+            'city': city.name,
+            'temp': content['main']['temp'],
+            'desc': content['weather'][0]['description'],
+            'icon': content['weather'][0]['icon']
+        }
+        city_data.append(data)
+        pprint(city_data)
+        context={
+            'city_data':city_data
+        }
+    return render(request, 'weatherapp/index.html', context)
 

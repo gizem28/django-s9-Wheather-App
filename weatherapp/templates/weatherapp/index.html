@@ -7,6 +7,19 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Weather App</h1>
+    <center><h1>Weather App</h1></center>
+    
+
+    
+    {% for city in city_data %}
+        <h4>{{city.city}}</h4>
+        <br>
+        {{city.temp}} <span>&#8451;</span>
+        <br>
+        <img src='http://openweathermap.org/img/wn/{{city.icon}}.png' alt='icon'>
+        {{city.desc}}
+        <hr>
+    {% endfor %}
+        
 </body>
 </html>
