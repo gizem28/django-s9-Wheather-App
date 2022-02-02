@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 import requests
 from decouple import config
@@ -8,7 +8,7 @@ from .models import City
 
 def index(request):
     cities=City.objects.all()
-    url = 'https://api.openweathermap.org/data/2.5/weather?q={}&appid={}&units=metric'
+    url = 'https://api.openweathermap.org/data/2.5/weather?q={}&appid={}&units=metric&lang=eng'
     # pprint(content)
     # print(type(content))
     u_city=request.GET.get('name')
@@ -24,7 +24,8 @@ def index(request):
                 City.objects.create(name=r_city)
                 messages.success(request, "City succesfully added")
         else:
-            messages.warning(request, 'City not found')        
+            messages.warning(request, 'City not found')
+        return redirect('index')        
     city_data=[]
     for city in cities:
         # print(city)
@@ -32,7 +33,7 @@ def index(request):
         content= response.json()
         # pprint(content)
         data={
-            'city': city.name,
+            'city': city,
             'temp': content['main']['temp'],
             'desc': content['weather'][0]['description'],
             'icon': content['weather'][0]['icon']
@@ -44,3 +45,8 @@ def index(request):
         }
     return render(request, 'weatherapp/index.html', context)
 
+def city_delete(request, id):
+    city =get_object_or_404(City, id=id)
+    city.delete()
+    messages.success(request, 'City deleted.')
+    return redirect('index')
